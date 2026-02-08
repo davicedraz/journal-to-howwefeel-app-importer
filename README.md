@@ -1,6 +1,6 @@
 # Journal → How We Feel CSV
 
-Scripts and examples to transform iOS Journal exports into a CSV compatible with How We Feel import.
+Scripts and examples to transform iOS [Journal](https://apps.apple.com/us/app/journal/id6447391597) exports into a CSV compatible with [How We Feel](https://howwefeel.org/) import.
 
 This repository **does not contain personal data**: everything was replaced with Lorem ipsum examples.
 
@@ -101,7 +101,7 @@ Done. `HowWeFeelEmotions.csv` will be updated by appending new rows.
 
 ## Disclaimer
 
-This project is not affiliated with, endorsed by, or sponsored by Apple or How We Feel. "Apple" and "How We Feel" are trademarks of their respective owners.
+This project is not affiliated with, endorsed by, or sponsored by Apple or [How We Feel](https://howwefeel.org/). "Apple" and "How We Feel" are trademarks of their respective owners.
 
 ## License
 
