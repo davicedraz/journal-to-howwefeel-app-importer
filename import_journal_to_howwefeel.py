@@ -353,10 +353,10 @@ def llm_choose_mood(text, existing_moods, model, api_key, max_moods=2, debug_lab
 
     snippet = text[:2000]
     prompt = (
-        "Escolha até {max_moods} moods da lista e responda APENAS com os nomes "
-        "separados por ';'. Se nenhum servir, responda vazio.\n\n"
-        "Lista de moods:\n{moods}\n\n"
-        "Texto:\n{snippet}\n"
+        "Choose up to {max_moods} moods from the list and respond ONLY with the names "
+        "separated by ';'. If none fit, respond with an empty string.\n\n"
+        "Mood list:\n{moods}\n\n"
+        "Text:\n{snippet}\n"
     ).format(max_moods=max_moods, moods=", ".join(moods_sorted), snippet=snippet)
 
     payload = {
