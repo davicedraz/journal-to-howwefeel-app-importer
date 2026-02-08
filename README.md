@@ -32,7 +32,7 @@ Diário/
 
 ## Requirements
 
-- macOS with `python3`
+- `python3`
 - Exported How We Feel CSV (e.g., `HowWeFeelEmotions.csv`)
 - `AppleJournalEntries/` folder at the same root level as the CSV
 - (Optional) OpenAI key in a `.env` file
