@@ -6,15 +6,16 @@ import html
 import json
 import os
 import re
+import unicodedata
 import urllib.error
 import urllib.request
 from html.parser import HTMLParser
 
 
-PORTUGUESE_MONTHS = {
+MONTHS_MAP = {
+    # Portuguese
     "janeiro": 1,
     "fevereiro": 2,
-    "março": 3,
     "marco": 3,
     "abril": 4,
     "maio": 5,
@@ -25,6 +26,92 @@ PORTUGUESE_MONTHS = {
     "outubro": 10,
     "novembro": 11,
     "dezembro": 12,
+    "jan": 1,
+    "fev": 2,
+    "mar": 3,
+    "abr": 4,
+    "mai": 5,
+    "jun": 6,
+    "jul": 7,
+    "ago": 8,
+    "set": 9,
+    "out": 10,
+    "nov": 11,
+    "dez": 12,
+    # English
+    "january": 1,
+    "february": 2,
+    "march": 3,
+    "april": 4,
+    "may": 5,
+    "june": 6,
+    "july": 7,
+    "august": 8,
+    "september": 9,
+    "october": 10,
+    "november": 11,
+    "december": 12,
+    "jan": 1,
+    "feb": 2,
+    "mar": 3,
+    "apr": 4,
+    "may": 5,
+    "jun": 6,
+    "jul": 7,
+    "aug": 8,
+    "sep": 9,
+    "sept": 9,
+    "oct": 10,
+    "nov": 11,
+    "dec": 12,
+    # Spanish
+    "enero": 1,
+    "febrero": 2,
+    "marzo": 3,
+    "abril": 4,
+    "mayo": 5,
+    "junio": 6,
+    "julio": 7,
+    "agosto": 8,
+    "septiembre": 9,
+    "setiembre": 9,
+    "octubre": 10,
+    "noviembre": 11,
+    "diciembre": 12,
+    "ene": 1,
+    "feb": 2,
+    "mar": 3,
+    "abr": 4,
+    "may": 5,
+    "jun": 6,
+    "jul": 7,
+    "ago": 8,
+    "sep": 9,
+    "set": 9,
+    "oct": 10,
+    "nov": 11,
+    "dic": 12,
+    # French
+    "janvier": 1,
+    "fevrier": 2,
+    "mars": 3,
+    "avril": 4,
+    "mai": 5,
+    "juin": 6,
+    "juillet": 7,
+    "aout": 8,
+    "septembre": 9,
+    "octobre": 10,
+    "novembre": 11,
+    "decembre": 12,
+    "janv": 1,
+    "fevr": 2,
+    "avr": 4,
+    "juil": 7,
+    "sept": 9,
+    "oct": 10,
+    "nov": 11,
+    "dec": 12,
 }
 
 WEEKDAYS_EN = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
@@ -97,18 +184,44 @@ class JournalHTMLParser(HTMLParser):
             self.text_parts.append(text)
 
 
+def normalize_token(text):
+    text = text.strip().lower()
+    text = unicodedata.normalize("NFD", text)
+    text = "".join(ch for ch in text if unicodedata.category(ch) != "Mn")
+    text = re.sub(r"[^\w]", "", text)
+    return text
+
+
 def parse_date_from_header(header_text):
-    header_text = header_text.strip().lower()
-    match = re.search(r"(\d{1,2}) de ([a-zçã]+) de (\d{4})", header_text)
-    if not match:
-        return None
-    day = int(match.group(1))
-    month_name = match.group(2).replace("ç", "c")
-    month = PORTUGUESE_MONTHS.get(month_name)
-    if not month:
-        return None
-    year = int(match.group(3))
-    return dt.date(year, month, day)
+    text = header_text.strip().lower().replace(",", " ")
+
+    # Pattern: 29 de outubro de 2025 (PT/ES/FR)
+    match = re.search(r"(\d{1,2})\s+de\s+([a-záéíóúàèìòùâêîôûãõç]+)\s+de\s+(\d{4})", text)
+    if match:
+        day = int(match.group(1))
+        month_name = normalize_token(match.group(2))
+        month = MONTHS_MAP.get(month_name)
+        if month:
+            return dt.date(int(match.group(3)), month, day)
+
+    # Pattern: November 29 2025
+    match = re.search(r"([a-záéíóúàèìòùâêîôûãõç]+)\s+(\d{1,2})\s+(\d{4})", text)
+    if match:
+        month_name = normalize_token(match.group(1))
+        month = MONTHS_MAP.get(month_name)
+        if month:
+            return dt.date(int(match.group(3)), month, int(match.group(2)))
+
+    # Pattern: 29 November 2025
+    match = re.search(r"(\d{1,2})\s+([a-záéíóúàèìòùâêîôûãõç]+)\s+(\d{4})", text)
+    if match:
+        day = int(match.group(1))
+        month_name = normalize_token(match.group(2))
+        month = MONTHS_MAP.get(month_name)
+        if month:
+            return dt.date(int(match.group(3)), month, day)
+
+    return None
 
 
 def format_date_for_csv(date_obj, time_str):

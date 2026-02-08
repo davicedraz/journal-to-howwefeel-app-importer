@@ -103,6 +103,10 @@ Done. `HowWeFeelEmotions.csv` will be updated by appending new rows.
 
 This project is not affiliated with, endorsed by, or sponsored by Apple or [How We Feel](https://howwefeel.org/). "Apple" and "How We Feel" are trademarks of their respective owners.
 
+## Language note
+
+This project was designed with Portuguese Journal exports in mind. It works with entries written in any language, and the **date header parsing supports Portuguese, English, Spanish, and French month names**. If your export uses a different locale, adjust the date parsing or month map in the script.
+
 ## License
 
 MIT. See `LICENSE`.
